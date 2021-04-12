@@ -8,7 +8,7 @@ class PersonData extends ChangeNotifier {
     InspiringPerson(
       name: 'Mark Zuckerberg',
       description:
-          'He is an American media magnate, internet entrepreneur, and philanthropist. He is known for co-founding Facebook, Inc.',
+          'He is an American media magnate, internet entrepreneur, and philanthropist.',
       birthDate: DateTime(1984, 5, 14),
       quotes: [
         'Move fast with stable infrastructure.',
@@ -20,7 +20,7 @@ class PersonData extends ChangeNotifier {
     InspiringPerson(
       name: 'Steve Jobs',
       description:
-          'He was an American business magnate, industrial designer, investor, and media proprietor. He was the chairman, the chief executive officer (CEO), and a co-founder of Apple Inc.',
+          'He was an American business magnate, industrial designer, investor, and media proprietor.',
       birthDate: DateTime(1955, 2, 24),
       deathDate: DateTime(2011, 10, 5),
       quotes: [
@@ -33,7 +33,7 @@ class PersonData extends ChangeNotifier {
     InspiringPerson(
       name: 'Bill Gates',
       description:
-          'He is an American business magnate, software developer, investor, author, landowner and philanthropist. He is a co-founder of Microsoft Corporation.',
+          'He is an American business magnate, software developer, investor, author, and landowner.',
       birthDate: DateTime(1955, 10, 25),
       quotes: [
         'Don’t compare yourself with anyone in this world…if you do so, you are insulting yourself.',
@@ -54,6 +54,12 @@ class PersonData extends ChangeNotifier {
 
   void addPerson(InspiringPerson person) {
     _persons.add(person);
+    notifyListeners();
+  }
+
+  void updatePerson(InspiringPerson oldPerson, InspiringPerson newPerson) {
+    int index = _persons.indexWhere((person) => person == oldPerson);
+    _persons[index] = newPerson;
     notifyListeners();
   }
 

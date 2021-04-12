@@ -2,9 +2,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+import 'package:rma_lv2/models/person_data.dart';
 import 'package:rma_lv2/models/inspiring_person.dart';
+import 'package:rma_lv2/screens/add_person_screen.dart';
 
 class PersonTile extends StatelessWidget {
   final InspiringPerson person;
@@ -25,6 +28,14 @@ class PersonTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: ListTile(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AddPersonScreen(person: person),
+            ),
+          );
+        },
         isThreeLine: true,
         leading: GestureDetector(
           onTap: () {
@@ -39,6 +50,13 @@ class PersonTile extends StatelessWidget {
         ),
         title: Text(person.name),
         subtitle: Text(formatDateTime() + '\n' + person.description),
+        trailing: IconButton(
+          icon: Icon(Icons.close),
+          onPressed: () {
+            Provider.of<PersonData>(context, listen: false)
+                .deletePerson(person);
+          },
+        ),
       ),
     );
   }

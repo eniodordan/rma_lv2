@@ -22,7 +22,7 @@ class PersonsScreen extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => AddPersonScreen(),
+              builder: (context) => AddPersonScreen(person: null),
             ),
           );
         },

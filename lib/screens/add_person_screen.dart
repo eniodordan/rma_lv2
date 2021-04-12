@@ -1,14 +1,19 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+
 import 'package:provider/provider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:rma_lv2/models/inspiring_person.dart';
 import 'package:rma_lv2/models/person_data.dart';
 
 class AddPersonScreen extends StatelessWidget {
+  final InspiringPerson person;
   final _formKey = GlobalKey<FormState>();
   final _deathFormKey = GlobalKey<FormState>();
+
+  AddPersonScreen({Key key, this.person}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +25,7 @@ class AddPersonScreen extends StatelessWidget {
     DateTime newPersonBirthDate;
     DateTime newPersonDeathDate;
     String newPersonQuote;
-    Image newPersonImage;
+    Image newPersonImage = person != null ? person.image : null;
 
     Future<void> getImage() async {
       final pickedFile = await picker.getImage(source: ImageSource.gallery);
@@ -49,6 +54,7 @@ class AddPersonScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       TextFormField(
+                        initialValue: person != null ? person.name : null,
                         decoration: InputDecoration(
                           border: UnderlineInputBorder(),
                           labelText: 'Name',
@@ -65,6 +71,8 @@ class AddPersonScreen extends StatelessWidget {
                       ),
                       SizedBox(height: 15.0),
                       TextFormField(
+                        initialValue:
+                            person != null ? person.description : null,
                         decoration: InputDecoration(
                           border: UnderlineInputBorder(),
                           labelText: 'Description',
@@ -81,6 +89,7 @@ class AddPersonScreen extends StatelessWidget {
                       ),
                       SizedBox(height: 15.0),
                       TextFormField(
+                        initialValue: person != null ? person.quotes[0] : null,
                         decoration: InputDecoration(
                           border: UnderlineInputBorder(),
                           labelText: 'Quote',
@@ -97,6 +106,7 @@ class AddPersonScreen extends StatelessWidget {
                       ),
                       SizedBox(height: 15.0),
                       InputDatePickerFormField(
+                        initialDate: person != null ? person.birthDate : null,
                         fieldLabelText: 'Birth Date',
                         firstDate: DateTime(1899),
                         lastDate: DateTime.now(),
@@ -111,6 +121,7 @@ class AddPersonScreen extends StatelessWidget {
                 Form(
                   key: _deathFormKey,
                   child: InputDatePickerFormField(
+                    initialDate: person != null ? person.deathDate : null,
                     fieldLabelText: 'Death Date',
                     firstDate: DateTime(1899),
                     lastDate: DateTime.now(),
@@ -143,14 +154,15 @@ class AddPersonScreen extends StatelessWidget {
                     height: 50.0,
                     width: double.infinity,
                     child: ElevatedButton(
-                      child: Text("Add"),
+                      child: Text(person != null ? 'Update' : 'Add'),
                       onPressed: () {
                         _formKey.currentState.save();
                         _deathFormKey.currentState.save();
 
-                        if (_formKey.currentState.validate() &&
-                            newPersonImage != null) {
-                          InspiringPerson person = new InspiringPerson(
+                        if (newPersonImage == null) {
+                          Fluttertoast.showToast(msg: 'Please add image.');
+                        } else if (_formKey.currentState.validate()) {
+                          InspiringPerson newPerson = new InspiringPerson(
                             name: newPersonName,
                             description: newPersonDescription,
                             birthDate: newPersonBirthDate,
@@ -159,8 +171,13 @@ class AddPersonScreen extends StatelessWidget {
                             image: newPersonImage,
                           );
 
-                          Provider.of<PersonData>(context, listen: false)
-                              .addPerson(person);
+                          if (person == null) {
+                            Provider.of<PersonData>(context, listen: false)
+                                .addPerson(newPerson);
+                          } else {
+                            Provider.of<PersonData>(context, listen: false)
+                                .updatePerson(person, newPerson);
+                          }
 
                           Navigator.pop(context);
                         }
